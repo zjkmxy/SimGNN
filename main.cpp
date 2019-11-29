@@ -7,6 +7,8 @@
 #include <cmath>
 using namespace std;
 
+typedef int (*GRAPH)[2];
+
 inline float sigmoid(float x){
   return 1.f / (1.f + exp(- x));
 }
@@ -15,7 +17,7 @@ template<int B>
 inline void relu(int A, float M[][B]){
   for(int i = 0; i < A; i ++){
     for(int j = 0; j < B; j ++){
-      M[i][j] = max(0, M[i][j]);
+      M[i][j] = max(0.f, M[i][j]);
     }
   }
 }
@@ -25,21 +27,15 @@ struct GCNConv{
   float W[nIn][nOut];
   float bias[nOut];
   
-  GCNConv(float Weight[nIn][nOut], float Bias[nOut]){
-    for(int i = 0; i < nIn; i ++){
-      for(int j = 0; j < nOut; j ++){
-        W[i][j] = Weight[i][j];
-      }
-    }
-    for(int j = 0; j < nOut; j ++){
-      bias[j] = Bias[j];
-    }
+  GCNConv(FILE *f){
+    fread(&W, sizeof(W), 1, f);
+    fread(&bias, sizeof(bias), 1, f);
   }
   
   // N = #nodes, M = #edges (including self), G[M][2] (directed), din[N][nIn], dOut[N][nOut]
   void calc(int N, int M, int G[][2], float din[][nIn], float dout[][nOut]){
-    int deg[N], degsqrt[N], norm[M];
-    int AX[N][nIn];
+    float deg[N], degsqrt[N], norm[M];
+    float AX[N][nIn];
     memset(deg, 0, sizeof(deg));
     memset(AX, 0, sizeof(AX));
     for(int j = 0; j < M; j ++){
@@ -54,7 +50,7 @@ struct GCNConv{
     for(int j = 0; j < M; j ++){
       int st = G[j][0], ed = G[j][1];
       for(int f = 0; f < nIn; f ++){
-        AX[ed][f] += norm[st] * din[st][f];
+        AX[ed][f] += norm[j] * din[st][f];
       }
     }
     for(int i = 0; i < N; i ++){
@@ -72,12 +68,8 @@ struct GCNConv{
 template<int F>
 struct Attention{
   float W[F][F];
-  Attention(float Weight[F][F]){
-    for(int i = 0; i < F; i ++){
-      for(int j = 0; j < F; j ++){
-        W[i][j] = Weight[i][j];
-      }
-    }
+  Attention(FILE* f){
+    fread(&W, sizeof(W), 1, f);
   }
   
   void calc(int N, float din[][F], float dout[F]){
@@ -86,7 +78,9 @@ struct Attention{
     memset(sig_scores, 0, sizeof(sig_scores));
     for(int i = 0; i < N; i ++){
       for(int f = 0; f < F; f ++){
-        global_context[f] += din[i][f];
+        for(int g = 0; g < F; g ++){
+          global_context[g] += din[i][f] * W[f][g];
+        }
       }
     }
     for(int f = 0; f < F; f ++){
@@ -119,22 +113,10 @@ struct TensorNet{
   float W[nIn][nIn][nOut];
   float WB[nOut][nIn*2];
   
-  TensorNet(float Bias[nOut], float Weight[nIn][nIn][nOut], float WeightBlock[nOut][nIn*2]){
-    for(int i = 0; i < nIn; i ++){
-      for(int j = 0; j < nIn; j ++){
-        for(int k = 0; k < nOut; k ++){
-          W[i][j][k] = Weight[i][j][k];
-        }
-      }
-    }
-    for(int k = 0; k < nOut; k ++){
-      for(int i = 0; i < nIn * 2; i ++){
-        WB[k][i] = WeightBlock[k][i];
-      }
-    }
-    for(int k = 0; k < nOut; k ++){
-      bias[k] = Bias[k];
-    }
+  TensorNet(FILE* f){
+    fread(&W, sizeof(W), 1, f);
+    fread(&WB, sizeof(WB), 1, f);
+    fread(&bias, sizeof(bias), 1, f);
   }
   
   void calc(float din1[nIn], float din2[nIn], float dout[nOut]){
@@ -164,7 +146,7 @@ struct TensorNet{
     }
     
     for(int k = 0; k < nOut; k ++){
-      dout[k] = max(0, score[k] + bias[k]);
+      dout[k] = max(0.f, score[k] + bias[k]);
     }
   }
 };
@@ -195,23 +177,20 @@ struct Histogram{
         dout[pos] += 1;
       }
     }
+    for(int k = 0; k < Bin; k ++){
+      dout[k] /= 1.0f * N1 * N2;
+    }
   }
 };
 
 template<int nIn, int nOut>
 struct LinearNN{
-  float W[nIn][nOut];
+  float W[nOut][nIn];
   float bias[nOut];
   
-  LinearNN(float Bias[nOut], float Weight[nIn][nOut]){
-    for(int i = 0; i < nIn; i ++){
-      for(int k = 0; k < nOut; k ++){
-        W[i][k] = Weight[i][k];
-      }
-    }
-    for(int k = 0; k < nOut; k ++){
-      bias[k] = Bias[k];
-    }
+  LinearNN(FILE* f){
+    fread(&W, sizeof(W), 1, f);
+    fread(&bias, sizeof(bias), 1, f);
   }
   
   void calc(float din[nIn], float dout[nOut]){
@@ -220,7 +199,7 @@ struct LinearNN{
     }
     for(int i = 0; i < nIn; i ++){
       for(int k = 0; k < nOut; k ++){
-        dout[k] += W[i][k] * din[i];
+        dout[k] += W[k][i] * din[i];
       }
     }
   }
@@ -244,6 +223,16 @@ struct SimGNN{
   TensorNet<nFilters3, nTensorNeurons> tensorNet;
   LinearNN<nScores, nBottleNeck> firstNN;
   LinearNN<nBottleNeck, 1> scoreNN;
+  
+  SimGNN(FILE* f):
+    gcnl1(f),
+    gcnl2(f),
+    gcnl3(f),
+    attention(f),
+    tensorNet(f),
+    firstNN(f),
+    scoreNN(f)
+  {}
   
   void process_single(int N, int M, int G[][2], int feature[],
                       float abs_feat[][nFilters3], float pool_feat[nFilters3])
@@ -280,13 +269,13 @@ struct SimGNN{
   
   inline float unnormalize(int N1, int N2, float score){
     float norm = - log(score);
-    return score * (N1 + N2) / 2.f;
+    return norm * (N1 + N2) / 2.f;
   }
   
   inline float run_pair(int N1, int M1, int G1[][2], int feature1[],
                         int N2, int M2, int G2[][2], int feature2[])
   {
-    float abs_feat1[N1][nFilters3], abs_feat2[N1][nFilters3];
+    float abs_feat1[N1][nFilters3], abs_feat2[N2][nFilters3];
     float pool_feat1[nFilters3], pool_feat2[nFilters3];
     float score;
     process_single(N1, M1, G1, feature1, abs_feat1, pool_feat1);
@@ -297,7 +286,43 @@ struct SimGNN{
   }
 };
 
-int main() {
-  return 0;
+void read_graph(FILE *f, int &N, int &M, vector<int>& feature, vector<int>& G){
+  int a, b;
+  fscanf(f, "%d", &N);
+  for(int i = 0; i < N; i ++){
+    fscanf(f, "%d", &a);
+    feature.push_back(a - 1);
+  }
+  fscanf(f, "%d", &M);
+  for(int i = 0; i < M; i ++){
+    fscanf(f, "%d%d", &a, &b);
+    G.push_back(a);
+    G.push_back(b);
+    G.push_back(b);
+    G.push_back(a);
+  }
+  M = M + M + N;
+  for(int i = 0; i < N; i ++){
+    G.push_back(i);
+    G.push_back(i);
+  }
 }
 
+int main() {
+  FILE* f = fopen("model.dat", "rb");
+  SimGNN* gnn = new SimGNN(f);
+  fclose(f);
+  
+  int N1, N2, M1, M2;
+  vector<int> feature1, G1, feature2, G2;
+  f = fopen("graph.txt", "r");
+  read_graph(f, N1, M1, feature1, G1);
+  read_graph(f, N2, M2, feature2, G2);
+  
+  float ret = gnn->run_pair(N1, M1, (GRAPH)G1.data(), feature1.data(),
+                            N2, M2, (GRAPH)G2.data(), feature2.data());
+  printf("%.6f\n", ret);
+  
+  delete gnn;
+  return 0;
+}
