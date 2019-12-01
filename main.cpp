@@ -22,6 +22,12 @@ inline void relu(int A, float M[][B]){
   }
 }
 
+inline void relu(int N, float F[]){
+  for(int i = 0; i < N; i ++){
+    F[i] = max(0.f, F[i]);
+  }
+}
+
 template<int nIn, int nOut>
 struct GCNConv{
   float W[nIn][nOut];
@@ -107,6 +113,23 @@ struct Attention{
   }
 };
 
+template<int F>
+struct Average{
+  void calc(int N, float din[][F], float dout[F]){
+    for(int k = 0; k < F; k ++){
+      dout[k] = 0.0f;
+    }
+    for(int i = 0; i < N; i ++){
+      for(int k = 0; k < F; k ++){
+        dout[k] += din[i][k];
+      }
+    }
+    for(int k = 0; k < F; k ++){
+      dout[k] /= N;
+    }
+  }
+};
+
 template<int nIn, int nOut>
 struct TensorNet{
   float bias[nOut];
@@ -122,7 +145,9 @@ struct TensorNet{
   void calc(float din1[nIn], float din2[nIn], float dout[nOut]){
     float score_w[nIn][nOut], score[nOut];
     memset(score_w, 0, sizeof(score_w));
-    memset(score, 0, sizeof(score));
+    for(int k = 0; k < nOut; k ++){
+      score[k] = bias[k];
+    }
     for(int i = 0; i < nIn; i ++){
       for(int j = 0; j < nIn; j ++){
         for(int k = 0; k < nOut; k ++){
@@ -146,7 +171,7 @@ struct TensorNet{
     }
     
     for(int k = 0; k < nOut; k ++){
-      dout[k] = max(0.f, score[k] + bias[k]);
+      dout[k] = max(0.f, score[k]);
     }
   }
 };
@@ -205,33 +230,34 @@ struct LinearNN{
   }
 };
 
-static const int nFeatures = 16;
-static const int nFilters1 = 128;
-static const int nFilters2 = 64;
-static const int nFilters3 = 32;
-static const int nBin = 16;
+static const int nFeatures = 29;
+static const int nFilters1 = 64;
+static const int nFilters2 = 32;
+static const int nFilters3 = 16;
+// static const int nBin = 16;
 static const int nTensorNeurons = 16;
-static const int nScores = nBin + nTensorNeurons;
-static const int nBottleNeck = 16;
+static const int nScores = nTensorNeurons;
+static const int nDense1 = 8;
+static const int nDense2 = 4;
 
 struct SimGNN{
   GCNConv<nFeatures, nFilters1> gcnl1;
   GCNConv<nFilters1, nFilters2> gcnl2;
   GCNConv<nFilters2, nFilters3> gcnl3;
-  Attention<nFilters3> attention;
-  Histogram<nFilters3, nBin> hist;
+  Average<nFilters3> average;
   TensorNet<nFilters3, nTensorNeurons> tensorNet;
-  LinearNN<nScores, nBottleNeck> firstNN;
-  LinearNN<nBottleNeck, 1> scoreNN;
+  LinearNN<nScores, nDense1> dense1;
+  LinearNN<nDense1, nDense2> dense2;
+  LinearNN<nDense2, 1> dense3;
   
   SimGNN(FILE* f):
     gcnl1(f),
     gcnl2(f),
     gcnl3(f),
-    attention(f),
     tensorNet(f),
-    firstNN(f),
-    scoreNN(f)
+    dense1(f),
+    dense2(f),
+    dense3(f)
   {}
   
   void process_single(int N, int M, int G[][2], int feature[],
@@ -249,20 +275,21 @@ struct SimGNN{
     gcnl2.calc(N, M, G, L1, L2);
     relu(N, L2);
     gcnl3.calc(N, M, G, L2, abs_feat);
-    attention.calc(N, abs_feat, pool_feat);
+    average.calc(N, abs_feat, pool_feat);
+    relu(nFilters3, pool_feat);
   }
   
   float calc_score(int N1, int N2, float abs_feat1[][nFilters3], float abs_feat2[][nFilters3],
                    float pool_feat1[nFilters3], float pool_feat2[nFilters3])
   {
-    float scores[nScores], mid[nBottleNeck];
+    float scores[nScores], l1[nDense1], l2[nDense2];
     float ret = 0.0f;
     tensorNet.calc(pool_feat1, pool_feat2, &scores[0]);
-    hist.calc(N1, N2, abs_feat1, abs_feat2, &scores[nTensorNeurons]);
-    firstNN.calc(scores, mid);
-    for(int i = 0; i < nBottleNeck; i ++)
-      mid[i] = max(0.0f, mid[i]);
-    scoreNN.calc(mid, &ret);
+    dense1.calc(scores, l1);
+    relu(nDense1, l1);
+    dense2.calc(l1, l2);
+    relu(nDense2, l2);
+    dense3.calc(l2, &ret);
     ret = sigmoid(ret);
     return ret;
   }
