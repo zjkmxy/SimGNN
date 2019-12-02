@@ -5,6 +5,7 @@
 #include <vector>
 #include <list>
 #include <cmath>
+#include <ctime>
 using namespace std;
 
 typedef int (*GRAPH)[2];
@@ -66,48 +67,6 @@ struct GCNConv{
           dout[i][g] += AX[i][f] * W[f][g];
         }
         // dout[i][g] = max(0, dout[i][g]);
-      }
-    }
-  }
-};
-
-template<int F>
-struct Attention{
-  float W[F][F];
-  Attention(FILE* f){
-    fread(&W, sizeof(W), 1, f);
-  }
-  
-  void calc(int N, float din[][F], float dout[F]){
-    float global_context[F], sig_scores[N];
-    memset(global_context, 0, sizeof(global_context));
-    memset(sig_scores, 0, sizeof(sig_scores));
-    for(int i = 0; i < N; i ++){
-      for(int f = 0; f < F; f ++){
-        for(int g = 0; g < F; g ++){
-          global_context[g] += din[i][f] * W[f][g];
-        }
-      }
-    }
-    for(int f = 0; f < F; f ++){
-      global_context[f] = tanh(global_context[f] / N);
-    }
-    
-    for(int i = 0; i < N; i ++){
-      for(int f = 0; f < F; f ++){
-        sig_scores[i] += din[i][f] * global_context[f];
-      }
-    }
-    for(int i = 0; i < N; i ++){
-      sig_scores[i] = sigmoid(sig_scores[i]);
-    }
-    
-    for(int f = 0; f < F; f ++){
-      dout[f] = 0;
-    }
-    for(int i = 0; i < N; i ++){
-      for(int f = 0; f < F; f ++){
-        dout[f] += din[i][f] * sig_scores[i];
       }
     }
   }
@@ -176,38 +135,6 @@ struct TensorNet{
   }
 };
 
-template<int F, int Bin>
-struct Histogram{
-  void calc(int N1, int N2, float din1[][F], float din2[][F], float dout[Bin]){
-    float scores[N1][N2];
-    float minv = 1e30, maxv = 0, dist;
-    for(int i = 0; i < N1; i ++){
-      for(int j = 0; j < N2; j ++){
-        scores[i][j] = 0;
-        for(int k = 0; k < F; k ++){
-          scores[i][j] += din1[i][k] * din2[j][k];
-        }
-        minv = min(minv, scores[i][j]);
-        maxv = max(maxv, scores[i][j]);
-      }
-    }
-    for(int k = 0; k < Bin; k ++){
-      dout[k] = 0;
-    }
-    dist = (maxv - minv) / Bin;
-    for(int i = 0; i < N1; i ++){
-      for(int j = 0; j < N2; j ++){
-        int pos = floor((scores[i][j] - minv) / dist);
-        pos = max(min(pos, Bin - 1), 0);
-        dout[pos] += 1;
-      }
-    }
-    for(int k = 0; k < Bin; k ++){
-      dout[k] /= 1.0f * N1 * N2;
-    }
-  }
-};
-
 template<int nIn, int nOut>
 struct LinearNN{
   float W[nOut][nIn];
@@ -260,12 +187,12 @@ struct SimGNN{
     dense3(f)
   {}
   
-  void process_single(int N, int M, int G[][2], int feature[],
-                      float abs_feat[][nFilters3], float pool_feat[nFilters3])
+  void process_single(int N, int M, int G[][2], int feature[], float pool_feat[nFilters3])
   {
     float FM[N][nFeatures];
     float L1[N][nFilters1];
     float L2[N][nFilters2];
+    float abs_feat[N][nFilters3];
     memset(FM, 0, sizeof(FM));
     for(int i = 0; i < N; i ++){
       FM[i][feature[i]] = 1.0f;
@@ -279,8 +206,7 @@ struct SimGNN{
     relu(nFilters3, pool_feat);
   }
   
-  float calc_score(int N1, int N2, float abs_feat1[][nFilters3], float abs_feat2[][nFilters3],
-                   float pool_feat1[nFilters3], float pool_feat2[nFilters3])
+  float calc_score(float pool_feat1[nFilters3], float pool_feat2[nFilters3])
   {
     float scores[nScores], l1[nDense1], l2[nDense2];
     float ret = 0.0f;
@@ -302,19 +228,21 @@ struct SimGNN{
   inline float run_pair(int N1, int M1, int G1[][2], int feature1[],
                         int N2, int M2, int G2[][2], int feature2[])
   {
-    float abs_feat1[N1][nFilters3], abs_feat2[N2][nFilters3];
     float pool_feat1[nFilters3], pool_feat2[nFilters3];
     float score;
-    process_single(N1, M1, G1, feature1, abs_feat1, pool_feat1);
-    process_single(N2, M2, G2, feature2, abs_feat2, pool_feat2);
-    score = calc_score(N1, N2, abs_feat1, abs_feat2, pool_feat1, pool_feat2);
-    // return unnormalize(N1, N2, score);
+    process_single(N1, M1, G1, feature1, pool_feat1);
+    process_single(N2, M2, G2, feature2, pool_feat2);
+    score = calc_score(pool_feat1, pool_feat2);
     return score;
   }
 };
 
 void read_graph(FILE *f, int &N, int &M, vector<int>& feature, vector<int>& G){
   int a, b;
+  
+  feature.clear();
+  G.clear();
+  
   fscanf(f, "%d", &N);
   for(int i = 0; i < N; i ++){
     fscanf(f, "%d", &a);
@@ -335,21 +263,61 @@ void read_graph(FILE *f, int &N, int &M, vector<int>& feature, vector<int>& G){
   }
 }
 
+static const int N_ROW = 560;
+static const int N_COL = 140;
+int id_row[N_ROW], id_col[N_COL];
+float row_emb[N_ROW][nFilters3], col_emb[N_ROW][nFilters3];
+float all_scores[N_ROW][N_COL];
+
 int main() {
+  char filename[30];
   FILE* f = fopen("model.dat", "rb");
   SimGNN* gnn = new SimGNN(f);
   fclose(f);
   
-  int N1, N2, M1, M2;
-  vector<int> feature1, G1, feature2, G2;
-  f = fopen("graph.txt", "r");
-  read_graph(f, N1, M1, feature1, G1);
-  read_graph(f, N2, M2, feature2, G2);
+  f = fopen("train.txt", "r");
+  for(int i = 0; i < N_ROW; i ++){
+    fscanf(f, "%d", id_row + i);
+  }
+  fclose(f);
   
-  float ret = gnn->run_pair(N1, M1, (GRAPH)G1.data(), feature1.data(),
-                            N2, M2, (GRAPH)G2.data(), feature2.data());
-  printf("%.6f\n", ret);
+  f = fopen("test.txt", "r");
+  for(int i = 0; i < N_COL; i ++){
+    fscanf(f, "%d", id_col + i);
+  }
+  fclose(f);
   
+  int N, M;
+  vector<int> feature, G;
+  clock_t start, end, mid;
+  
+  start = clock();
+  for(int i = 0; i < N_ROW; i ++){
+    sprintf(filename, "./train/%d.txt", id_row[i]);
+    f = fopen(filename, "r");
+    read_graph(f, N, M, feature, G);
+    fclose(f);
+    gnn->process_single(N, M, (GRAPH)G.data(), feature.data(), row_emb[i]);
+  }
+  for(int i = 0; i < N_COL; i ++){
+    sprintf(filename, "./test/%d.txt", id_col[i]);
+    f = fopen(filename, "r");
+    read_graph(f, N, M, feature, G);
+    fclose(f);
+    gnn->process_single(N, M, (GRAPH)G.data(), feature.data(), col_emb[i]);
+  }
+  mid = clock();
+  for(int i = 0; i < N_ROW; i ++){
+    for(int j = 0; j < N_COL; j ++){
+      all_scores[i][j] = gnn->calc_score(row_emb[i], col_emb[j]);
+    }
+  }
+  end = clock();
+  
+  printf("%.6f\n", all_scores[0][0]);
+  printf("TIME: %.3f\n", ((float) (end - start)) / CLOCKS_PER_SEC);
+  printf("CALC EMBEDDING: %.3f\n", ((float) (mid - start)) / CLOCKS_PER_SEC);
+  printf("PAIRWISE SCORE: %.3f\n", ((float) (end - mid)) / CLOCKS_PER_SEC);
   delete gnn;
   return 0;
 }
