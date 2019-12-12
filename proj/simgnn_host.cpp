@@ -3,20 +3,9 @@
 #include <string>
 #include <algorithm>
 #include <cstdio>
+#include <xcl2.hpp>
 #include "const.h"
 #include "ml-layers.hpp"
-#ifdef MCC_ACC
-#include MCC_ACC_H_FILE
-#else
-extern void simgnn_kernel(
-  const float weights[],
-  const int nrow,
-  const float row_embs[][SIZE_EMBEDDING],
-  const int ncol,
-  const float col_embs[][SIZE_EMBEDDING],
-  float results[]
-);
-#endif
 
 #define NUM_ROW 1200
 #define NUM_COL 1200
@@ -59,22 +48,45 @@ int main(int argc, char **argv) {
   fclose(fmodel);
 
   // Evaluate scores
+    // OpenCL host setup start
+  vector<cl::Device> devices = xcl::get_xil_devices();
+  cl::Device device = devices[0];
 
-#ifdef MCC_ACC // use kernel binary file
-  char* kernel_bin_file = argv[argc - 1];
-  // load the binary file into the system
-  __merlin_init(kernel_bin_file);
-#endif
+  cl::Context context(device);
+  cl::CommandQueue q(context, device, CL_QUEUE_PROFILING_ENABLE);
+  string device_name = device.getInfo<CL_DEVICE_NAME>(); 
 
-#ifdef MCC_ACC
-  __merlin_simgnn_kernel(weights, NUM_ROW, row_embs, NUM_COL, col_embs, results);
-#else
-  simgnn_kernel(weights, NUM_ROW, row_embs, NUM_COL, col_embs, results);
-#endif
+  string binaryFile = xcl::find_binary_file(device_name, "simgnn_kernel");
+  cl::Program::Binaries bins = xcl::import_binary_file(binaryFile);
+  devices.resize(1);
+  cl::Program program(context, devices, bins);
+  cl::Kernel kernel(program, "simgnn_kernel");
 
-#ifdef MCC_ACC
-    __merlin_release();
-#endif
+  vector<cl::Memory> inBufVec, outBufVec;
+  cl::Buffer buf_weight(context,CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY,
+                        nWeights * sizeof(float), &weights[0]);
+  cl::Buffer buf_row(context,CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY,
+                     NUM_ROW * SIZE_EMBEDDING * sizeof(float), &row_embs[0]);
+  cl::Buffer buf_col(context,CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY,
+                     NUM_COL * SIZE_EMBEDDING * sizeof(float), &col_embs[0]);
+  cl::Buffer buf_results(context,CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE, 
+                         NUM_ROW * NUM_COL * sizeof(float), &results[0]);
+  inBufVec.push_back(buf_weight);
+  inBufVec.push_back(buf_row);
+  inBufVec.push_back(buf_col);
+  outBufVec.push_back(buf_results);
+
+  //Copy input data to device global memory
+  q.enqueueMigrateMemObjects(inBufVec, 0/* 0 means from host*/);
+
+  auto krnl_simgnn = cl::KernelFunctor<cl::Buffer&, int, cl::Buffer&, int, cl::Buffer&, cl::Buffer&>(kernel);
+  // OpenCL host setup end
+
+  krnl_simgnn(cl::EnqueueArgs(q, cl::NDRange(1, 1, 1), cl::NDRange(1, 1, 1)),
+              buf_weight, NUM_ROW, buf_row, NUM_COL, buf_col, buf_results);
+
+  q.enqueueMigrateMemObjects(outBufVec, CL_MIGRATE_MEM_OBJECT_HOST);
+  q.finish();
 
   printf("RESULTS: %f %f %f %f\n", results[0], results[1], results[NUM_COL], results[NUM_COL+1]);
 

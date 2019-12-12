@@ -1,0 +1,528 @@
+
+
+================================================================
+== Vivado HLS Report for 'load_dense_16_8_s'
+================================================================
+* Date:           Thu Dec 12 08:54:43 2019
+
+* Version:        2019.1.op (Build 2552052 on Fri May 24 15:28:33 MDT 2019)
+* Project:        simgnn_kernel
+* Solution:       solution
+* Product family: virtexuplus
+* Target device:  xcvu9p-flgb2104-2-i
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   4.00|     2.920|        1.08|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+---------+
+    |  Latency  |  Interval | Pipeline|
+    | min | max | min | max |   Type  |
+    +-----+-----+-----+-----+---------+
+    |  154|  154|  154|  154|   none  |
+    +-----+-----+-----+-----+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        +----------+-----+-----+----------+-----------+-----------+------+----------+
+        |          |  Latency  | Iteration|  Initiation Interval  | Trip |          |
+        | Loop Name| min | max |  Latency |  achieved |   target  | Count| Pipelined|
+        +----------+-----+-----+----------+-----------+-----------+------+----------+
+        |- Loop 1  |  135|  135|         9|          1|          1|   128|    yes   |
+        |- Loop 2  |   15|   15|         9|          1|          1|     8|    yes   |
+        +----------+-----+-----+----------+-----------+-----------+------+----------+
+
+
+
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++---------------------+---------+-------+---------+---------+-----+
+|         Name        | BRAM_18K| DSP48E|    FF   |   LUT   | URAM|
++---------------------+---------+-------+---------+---------+-----+
+|DSP                  |        -|      -|        -|        -|    -|
+|Expression           |        -|      -|        0|      281|    -|
+|FIFO                 |        -|      -|        -|        -|    -|
+|Instance             |        -|      -|        -|        -|    -|
+|Memory               |        -|      -|        -|        -|    -|
+|Multiplexer          |        -|      -|        -|      174|    -|
+|Register             |        0|      -|     4897|      160|    -|
++---------------------+---------+-------+---------+---------+-----+
+|Total                |        0|      0|     4897|      615|    0|
++---------------------+---------+-------+---------+---------+-----+
+|Available SLR        |     1440|   2280|   788160|   394080|  320|
++---------------------+---------+-------+---------+---------+-----+
+|Utilization SLR (%)  |        0|      0|    ~0   |    ~0   |    0|
++---------------------+---------+-------+---------+---------+-----+
+|Available            |     4320|   6840|  2364480|  1182240|  960|
++---------------------+---------+-------+---------+---------+-----+
+|Utilization (%)      |        0|      0|    ~0   |    ~0   |    0|
++---------------------+---------+-------+---------+---------+-----+
+
++ Detail: 
+    * Instance: 
+    N/A
+
+    * DSP48E: 
+    N/A
+
+    * Memory: 
+    N/A
+
+    * FIFO: 
+    N/A
+
+    * Expression: 
+    +-----------------------------------+----------+-------+---+----+------------+------------+
+    |           Variable Name           | Operation| DSP48E| FF| LUT| Bitwidth P0| Bitwidth P1|
+    +-----------------------------------+----------+-------+---+----+------------+------------+
+    |add_ln44_2_fu_799_p2               |     +    |      0|  0|   6|           1|           4|
+    |add_ln44_fu_765_p2                 |     +    |      0|  0|   8|           8|           1|
+    |add_ln45_fu_771_p2                 |     +    |      0|  0|  13|           5|          13|
+    |add_ln46_3_fu_838_p2               |     +    |      0|  0|  63|          63|          63|
+    |add_ln46_fu_825_p2                 |     +    |      0|  0|  13|           1|          13|
+    |add_ln50_fu_1529_p2                |     +    |      0|  0|  63|          63|          63|
+    |i_fu_1510_p2                       |     +    |      0|  0|   6|           4|           1|
+    |idx_fu_1516_p2                     |     +    |      0|  0|  13|           1|          13|
+    |j_fu_858_p2                        |     +    |      0|  0|   6|           5|           1|
+    |ap_block_state10_pp0_stage0_iter8  |    and   |      0|  0|   2|           1|           1|
+    |ap_block_state13_io                |    and   |      0|  0|   2|           1|           1|
+    |ap_block_state20_pp1_stage0_iter8  |    and   |      0|  0|   2|           1|           1|
+    |ap_block_state3_io                 |    and   |      0|  0|   2|           1|           1|
+    |icmp_ln44_fu_759_p2                |   icmp   |      0|  0|  13|           8|           9|
+    |icmp_ln45_fu_777_p2                |   icmp   |      0|  0|  11|           5|           6|
+    |icmp_ln49_fu_1504_p2               |   icmp   |      0|  0|  11|           4|           5|
+    |ap_block_pp0_stage0_11001          |    or    |      0|  0|   2|           1|           1|
+    |ap_block_pp1_stage0_11001          |    or    |      0|  0|   2|           1|           1|
+    |select_ln44_fu_817_p3              |  select  |      0|  0|  13|           1|          13|
+    |select_ln45_3_fu_791_p3            |  select  |      0|  0|   5|           1|           1|
+    |select_ln45_4_fu_805_p3            |  select  |      0|  0|   4|           1|           4|
+    |select_ln45_fu_783_p3              |  select  |      0|  0|  13|           1|          13|
+    |ap_enable_pp0                      |    xor   |      0|  0|   2|           1|           2|
+    |ap_enable_pp1                      |    xor   |      0|  0|   2|           1|           2|
+    |ap_enable_reg_pp0_iter1            |    xor   |      0|  0|   2|           2|           1|
+    |ap_enable_reg_pp1_iter1            |    xor   |      0|  0|   2|           2|           1|
+    +-----------------------------------+----------+-------+---+----+------------+------------+
+    |Total                              |          |      0|  0| 281|         184|         235|
+    +-----------------------------------+----------+-------+---+----+------------+------------+
+
+    * Multiplexer: 
+    +------------------------------+----+-----------+-----+-----------+
+    |             Name             | LUT| Input Size| Bits| Total Bits|
+    +------------------------------+----+-----------+-----+-----------+
+    |ap_NS_fsm                     |  33|          6|    1|          6|
+    |ap_enable_reg_pp0_iter1       |   9|          2|    1|          2|
+    |ap_enable_reg_pp0_iter8       |   9|          2|    1|          2|
+    |ap_enable_reg_pp1_iter1       |   9|          2|    1|          2|
+    |ap_enable_reg_pp1_iter8       |   9|          2|    1|          2|
+    |ap_phi_mux_i_0_phi_fu_708_p4  |   9|          2|    4|          8|
+    |i1_0_reg_748                  |   9|          2|    4|          8|
+    |i_0_reg_704                   |   9|          2|    4|          8|
+    |idx_0_reg_693                 |   9|          2|   13|         26|
+    |idx_1_reg_715                 |   9|          2|   13|         26|
+    |idx_2_reg_737                 |   9|          2|   13|         26|
+    |indvar_flatten_reg_682        |   9|          2|    8|         16|
+    |j_0_reg_726                   |   9|          2|    5|         10|
+    |m_axi_weights_ARADDR          |  15|          3|   64|        192|
+    |weights_blk_n_AR              |   9|          2|    1|          2|
+    |weights_blk_n_R               |   9|          2|    1|          2|
+    +------------------------------+----+-----------+-----+-----------+
+    |Total                         | 174|         37|  135|        338|
+    +------------------------------+----+-----------+-----+-----------+
+
+    * Register: 
+    +----------------------------+----+----+-----+-----------+
+    |            Name            | FF | LUT| Bits| Const Bits|
+    +----------------------------+----+----+-----+-----------+
+    |W10_1_fu_592                |  32|   0|   32|          0|
+    |W116_1_fu_588               |  32|   0|   32|          0|
+    |W117_1_fu_584               |  32|   0|   32|          0|
+    |W118_1_fu_576               |  32|   0|   32|          0|
+    |W119_1_fu_572               |  32|   0|   32|          0|
+    |W11_1_fu_604                |  32|   0|   32|          0|
+    |W120_1_fu_564               |  32|   0|   32|          0|
+    |W121_1_fu_560               |  32|   0|   32|          0|
+    |W122_1_fu_552               |  32|   0|   32|          0|
+    |W123_1_fu_548               |  32|   0|   32|          0|
+    |W124_1_fu_540               |  32|   0|   32|          0|
+    |W125_1_fu_536               |  32|   0|   32|          0|
+    |W126_1_fu_528               |  32|   0|   32|          0|
+    |W127_1_fu_524               |  32|   0|   32|          0|
+    |W128_1_fu_516               |  32|   0|   32|          0|
+    |W129_1_fu_512               |  32|   0|   32|          0|
+    |W12_1_fu_612                |  32|   0|   32|          0|
+    |W130_1_fu_504               |  32|   0|   32|          0|
+    |W131_1_fu_500               |  32|   0|   32|          0|
+    |W13_1_fu_608                |  32|   0|   32|          0|
+    |W14_1_fu_600                |  32|   0|   32|          0|
+    |W1550_1_fu_596              |  32|   0|   32|          0|
+    |W16_1_fu_484                |  32|   0|   32|          0|
+    |W232_1_fu_492               |  32|   0|   32|          0|
+    |W233_1_fu_488               |  32|   0|   32|          0|
+    |W234_1_fu_480               |  32|   0|   32|          0|
+    |W235_1_fu_352               |  32|   0|   32|          0|
+    |W236_1_fu_364               |  32|   0|   32|          0|
+    |W237_1_fu_376               |  32|   0|   32|          0|
+    |W238_1_fu_388               |  32|   0|   32|          0|
+    |W239_1_fu_400               |  32|   0|   32|          0|
+    |W240_1_fu_412               |  32|   0|   32|          0|
+    |W241_1_fu_424               |  32|   0|   32|          0|
+    |W242_1_fu_436               |  32|   0|   32|          0|
+    |W243_1_fu_448               |  32|   0|   32|          0|
+    |W244_1_fu_460               |  32|   0|   32|          0|
+    |W245_1_fu_472               |  32|   0|   32|          0|
+    |W246_1_fu_476               |  32|   0|   32|          0|
+    |W247_1_fu_468               |  32|   0|   32|          0|
+    |W2_1_fu_496                 |  32|   0|   32|          0|
+    |W348_1_fu_464               |  32|   0|   32|          0|
+    |W349_1_fu_456               |  32|   0|   32|          0|
+    |W350_1_fu_452               |  32|   0|   32|          0|
+    |W351_1_fu_444               |  32|   0|   32|          0|
+    |W352_1_fu_440               |  32|   0|   32|          0|
+    |W353_1_fu_432               |  32|   0|   32|          0|
+    |W354_1_fu_428               |  32|   0|   32|          0|
+    |W355_1_fu_420               |  32|   0|   32|          0|
+    |W356_1_fu_416               |  32|   0|   32|          0|
+    |W357_1_fu_408               |  32|   0|   32|          0|
+    |W358_1_fu_404               |  32|   0|   32|          0|
+    |W359_1_fu_396               |  32|   0|   32|          0|
+    |W360_1_fu_392               |  32|   0|   32|          0|
+    |W361_1_fu_384               |  32|   0|   32|          0|
+    |W362_1_fu_380               |  32|   0|   32|          0|
+    |W363_1_fu_372               |  32|   0|   32|          0|
+    |W3_1_fu_508                 |  32|   0|   32|          0|
+    |W464_1_fu_368               |  32|   0|   32|          0|
+    |W465_1_fu_360               |  32|   0|   32|          0|
+    |W466_1_fu_356               |  32|   0|   32|          0|
+    |W467_1_fu_348               |  32|   0|   32|          0|
+    |W468_1_fu_216               |  32|   0|   32|          0|
+    |W469_1_fu_228               |  32|   0|   32|          0|
+    |W470_1_fu_240               |  32|   0|   32|          0|
+    |W471_1_fu_252               |  32|   0|   32|          0|
+    |W472_1_fu_264               |  32|   0|   32|          0|
+    |W473_1_fu_276               |  32|   0|   32|          0|
+    |W474_1_fu_288               |  32|   0|   32|          0|
+    |W475_1_fu_300               |  32|   0|   32|          0|
+    |W476_1_fu_312               |  32|   0|   32|          0|
+    |W477_1_fu_324               |  32|   0|   32|          0|
+    |W478_1_fu_336               |  32|   0|   32|          0|
+    |W479_1_fu_344               |  32|   0|   32|          0|
+    |W4_1_fu_520                 |  32|   0|   32|          0|
+    |W580_1_fu_340               |  32|   0|   32|          0|
+    |W581_1_fu_332               |  32|   0|   32|          0|
+    |W582_1_fu_328               |  32|   0|   32|          0|
+    |W583_1_fu_320               |  32|   0|   32|          0|
+    |W584_1_fu_316               |  32|   0|   32|          0|
+    |W585_1_fu_308               |  32|   0|   32|          0|
+    |W586_1_fu_304               |  32|   0|   32|          0|
+    |W587_1_fu_296               |  32|   0|   32|          0|
+    |W588_1_fu_292               |  32|   0|   32|          0|
+    |W589_1_fu_284               |  32|   0|   32|          0|
+    |W590_1_fu_280               |  32|   0|   32|          0|
+    |W591_1_fu_272               |  32|   0|   32|          0|
+    |W592_1_fu_268               |  32|   0|   32|          0|
+    |W593_1_fu_260               |  32|   0|   32|          0|
+    |W594_1_fu_256               |  32|   0|   32|          0|
+    |W595_1_fu_248               |  32|   0|   32|          0|
+    |W5_1_fu_532                 |  32|   0|   32|          0|
+    |W6100_1_fu_220              |  32|   0|   32|          0|
+    |W6101_1_fu_212              |  32|   0|   32|          0|
+    |W6102_1_fu_108              |  32|   0|   32|          0|
+    |W6103_1_fu_112              |  32|   0|   32|          0|
+    |W6104_1_fu_116              |  32|   0|   32|          0|
+    |W6105_1_fu_120              |  32|   0|   32|          0|
+    |W6106_1_fu_128              |  32|   0|   32|          0|
+    |W6107_1_fu_140              |  32|   0|   32|          0|
+    |W6108_1_fu_152              |  32|   0|   32|          0|
+    |W6109_1_fu_164              |  32|   0|   32|          0|
+    |W6110_1_fu_176              |  32|   0|   32|          0|
+    |W6111_1_fu_188              |  32|   0|   32|          0|
+    |W696_1_fu_244               |  32|   0|   32|          0|
+    |W697_1_fu_236               |  32|   0|   32|          0|
+    |W698_1_fu_232               |  32|   0|   32|          0|
+    |W699_1_fu_224               |  32|   0|   32|          0|
+    |W6_1_fu_544                 |  32|   0|   32|          0|
+    |W7112_1_fu_200              |  32|   0|   32|          0|
+    |W7113_1_fu_208              |  32|   0|   32|          0|
+    |W7114_1_fu_204              |  32|   0|   32|          0|
+    |W7115_1_fu_196              |  32|   0|   32|          0|
+    |W7116_1_fu_192              |  32|   0|   32|          0|
+    |W7117_1_fu_184              |  32|   0|   32|          0|
+    |W7118_1_fu_180              |  32|   0|   32|          0|
+    |W7119_1_fu_172              |  32|   0|   32|          0|
+    |W7120_1_fu_168              |  32|   0|   32|          0|
+    |W7121_1_fu_160              |  32|   0|   32|          0|
+    |W7122_1_fu_156              |  32|   0|   32|          0|
+    |W7123_1_fu_148              |  32|   0|   32|          0|
+    |W7124_1_fu_144              |  32|   0|   32|          0|
+    |W7125_1_fu_136              |  32|   0|   32|          0|
+    |W7126_1_fu_132              |  32|   0|   32|          0|
+    |W7127_1_fu_124              |  32|   0|   32|          0|
+    |W7_1_fu_556                 |  32|   0|   32|          0|
+    |W8_1_fu_568                 |  32|   0|   32|          0|
+    |W9_1_fu_580                 |  32|   0|   32|          0|
+    |W_1_fu_616                  |  32|   0|   32|          0|
+    |ap_CS_fsm                   |   5|   0|    5|          0|
+    |ap_enable_reg_pp0_iter0     |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter1     |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter2     |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter3     |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter4     |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter5     |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter6     |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter7     |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter8     |   1|   0|    1|          0|
+    |ap_enable_reg_pp1_iter0     |   1|   0|    1|          0|
+    |ap_enable_reg_pp1_iter1     |   1|   0|    1|          0|
+    |ap_enable_reg_pp1_iter2     |   1|   0|    1|          0|
+    |ap_enable_reg_pp1_iter3     |   1|   0|    1|          0|
+    |ap_enable_reg_pp1_iter4     |   1|   0|    1|          0|
+    |ap_enable_reg_pp1_iter5     |   1|   0|    1|          0|
+    |ap_enable_reg_pp1_iter6     |   1|   0|    1|          0|
+    |ap_enable_reg_pp1_iter7     |   1|   0|    1|          0|
+    |ap_enable_reg_pp1_iter8     |   1|   0|    1|          0|
+    |bias_0_write_assign_fu_648  |  32|   0|   32|          0|
+    |bias_1_write_assign_fu_644  |  32|   0|   32|          0|
+    |bias_2_write_assign_fu_640  |  32|   0|   32|          0|
+    |bias_3_write_assign_fu_636  |  32|   0|   32|          0|
+    |bias_4_write_assign_fu_632  |  32|   0|   32|          0|
+    |bias_5_write_assign_fu_628  |  32|   0|   32|          0|
+    |bias_6_write_assign_fu_624  |  32|   0|   32|          0|
+    |bias_7_write_assign_fu_620  |  32|   0|   32|          0|
+    |i1_0_reg_748                |   4|   0|    4|          0|
+    |i_0_reg_704                 |   4|   0|    4|          0|
+    |icmp_ln44_reg_3587          |   1|   0|    1|          0|
+    |icmp_ln49_reg_3678          |   1|   0|    1|          0|
+    |idx_0_reg_693               |  13|   0|   13|          0|
+    |idx_1_reg_715               |  13|   0|   13|          0|
+    |idx_2_reg_737               |  13|   0|   13|          0|
+    |indvar_flatten_reg_682      |   8|   0|    8|          0|
+    |j_0_reg_726                 |   5|   0|    5|          0|
+    |select_ln45_4_reg_3596      |   4|   0|    4|          0|
+    |trunc_ln45_reg_3601         |   3|   0|    3|          0|
+    |trunc_ln46_reg_3621         |   4|   0|    4|          0|
+    |trunc_ln50_reg_3698         |   3|   0|    3|          0|
+    |weights_addr_5_reg_3692     |  63|   0|   64|          1|
+    |weights_addr_reg_3615       |  63|   0|   64|          1|
+    |icmp_ln44_reg_3587          |  64|  32|    1|          0|
+    |icmp_ln49_reg_3678          |  64|  32|    1|          0|
+    |trunc_ln45_reg_3601         |  64|  32|    3|          0|
+    |trunc_ln46_reg_3621         |  64|  32|    4|          0|
+    |trunc_ln50_reg_3698         |  64|  32|    3|          0|
+    +----------------------------+----+----+-----+-----------+
+    |Total                       |4897| 160| 4591|          2|
+    +----------------------------+----+----+-----+-----------+
+
+
+
+================================================================
+== Interface
+================================================================
+* Summary: 
++------------------------+-----+-----+------------+-------------------+--------------+
+|        RTL Ports       | Dir | Bits|  Protocol  |   Source Object   |    C Type    |
++------------------------+-----+-----+------------+-------------------+--------------+
+|ap_clk                  |  in |    1| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_rst                  |  in |    1| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_start                |  in |    1| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_done                 | out |    1| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_idle                 | out |    1| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_ready                | out |    1| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_0             | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_1             | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_2             | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_3             | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_4             | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_5             | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_6             | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_7             | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_8             | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_9             | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_10            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_11            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_12            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_13            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_14            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_15            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_16            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_17            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_18            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_19            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_20            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_21            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_22            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_23            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_24            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_25            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_26            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_27            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_28            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_29            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_30            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_31            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_32            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_33            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_34            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_35            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_36            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_37            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_38            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_39            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_40            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_41            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_42            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_43            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_44            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_45            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_46            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_47            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_48            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_49            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_50            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_51            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_52            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_53            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_54            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_55            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_56            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_57            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_58            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_59            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_60            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_61            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_62            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_63            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_64            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_65            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_66            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_67            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_68            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_69            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_70            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_71            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_72            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_73            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_74            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_75            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_76            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_77            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_78            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_79            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_80            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_81            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_82            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_83            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_84            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_85            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_86            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_87            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_88            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_89            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_90            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_91            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_92            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_93            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_94            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_95            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_96            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_97            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_98            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_99            | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_100           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_101           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_102           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_103           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_104           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_105           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_106           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_107           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_108           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_109           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_110           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_111           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_112           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_113           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_114           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_115           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_116           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_117           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_118           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_119           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_120           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_121           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_122           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_123           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_124           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_125           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_126           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_127           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_128           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_129           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_130           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_131           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_132           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_133           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_134           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|ap_return_135           | out |   32| ap_ctrl_hs | load_dense<16, 8> | return value |
+|m_axi_weights_AWVALID   | out |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_AWREADY   |  in |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_AWADDR    | out |   64|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_AWID      | out |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_AWLEN     | out |   32|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_AWSIZE    | out |    3|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_AWBURST   | out |    2|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_AWLOCK    | out |    2|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_AWCACHE   | out |    4|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_AWPROT    | out |    3|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_AWQOS     | out |    4|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_AWREGION  | out |    4|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_AWUSER    | out |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_WVALID    | out |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_WREADY    |  in |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_WDATA     | out |   32|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_WSTRB     | out |    4|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_WLAST     | out |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_WID       | out |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_WUSER     | out |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_ARVALID   | out |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_ARREADY   |  in |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_ARADDR    | out |   64|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_ARID      | out |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_ARLEN     | out |   32|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_ARSIZE    | out |    3|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_ARBURST   | out |    2|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_ARLOCK    | out |    2|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_ARCACHE   | out |    4|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_ARPROT    | out |    3|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_ARQOS     | out |    4|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_ARREGION  | out |    4|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_ARUSER    | out |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_RVALID    |  in |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_RREADY    | out |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_RDATA     |  in |   32|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_RLAST     |  in |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_RID       |  in |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_RUSER     |  in |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_RRESP     |  in |    2|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_BVALID    |  in |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_BREADY    | out |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_BRESP     |  in |    2|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_BID       |  in |    1|    m_axi   |      weights      |    pointer   |
+|m_axi_weights_BUSER     |  in |    1|    m_axi   |      weights      |    pointer   |
+|weights_offset          |  in |   62|   ap_none  |   weights_offset  |    scalar    |
++------------------------+-----+-----+------------+-------------------+--------------+
+
