@@ -3,7 +3,7 @@
 ================================================================
 == Vivado HLS Report for 'load_dense_16_8_s'
 ================================================================
-* Date:           Thu Dec 12 08:54:43 2019
+* Date:           Fri Dec 13 03:46:33 2019
 
 * Version:        2019.1.op (Build 2552052 on Fri May 24 15:28:33 MDT 2019)
 * Project:        simgnn_kernel
@@ -90,12 +90,12 @@
     +-----------------------------------+----------+-------+---+----+------------+------------+
     |           Variable Name           | Operation| DSP48E| FF| LUT| Bitwidth P0| Bitwidth P1|
     +-----------------------------------+----------+-------+---+----+------------+------------+
-    |add_ln44_2_fu_799_p2               |     +    |      0|  0|   6|           1|           4|
     |add_ln44_fu_765_p2                 |     +    |      0|  0|   8|           8|           1|
-    |add_ln45_fu_771_p2                 |     +    |      0|  0|  13|           5|          13|
+    |add_ln45_fu_777_p2                 |     +    |      0|  0|  13|           5|          13|
     |add_ln46_3_fu_838_p2               |     +    |      0|  0|  63|          63|          63|
     |add_ln46_fu_825_p2                 |     +    |      0|  0|  13|           1|          13|
     |add_ln50_fu_1529_p2                |     +    |      0|  0|  63|          63|          63|
+    |i_7_fu_771_p2                      |     +    |      0|  0|   6|           1|           4|
     |i_fu_1510_p2                       |     +    |      0|  0|   6|           4|           1|
     |idx_fu_1516_p2                     |     +    |      0|  0|  13|           1|          13|
     |j_fu_858_p2                        |     +    |      0|  0|   6|           5|           1|
@@ -104,14 +104,14 @@
     |ap_block_state20_pp1_stage0_iter8  |    and   |      0|  0|   2|           1|           1|
     |ap_block_state3_io                 |    and   |      0|  0|   2|           1|           1|
     |icmp_ln44_fu_759_p2                |   icmp   |      0|  0|  13|           8|           9|
-    |icmp_ln45_fu_777_p2                |   icmp   |      0|  0|  11|           5|           6|
+    |icmp_ln45_fu_783_p2                |   icmp   |      0|  0|  11|           5|           6|
     |icmp_ln49_fu_1504_p2               |   icmp   |      0|  0|  11|           4|           5|
     |ap_block_pp0_stage0_11001          |    or    |      0|  0|   2|           1|           1|
     |ap_block_pp1_stage0_11001          |    or    |      0|  0|   2|           1|           1|
     |select_ln44_fu_817_p3              |  select  |      0|  0|  13|           1|          13|
-    |select_ln45_3_fu_791_p3            |  select  |      0|  0|   5|           1|           1|
+    |select_ln45_3_fu_797_p3            |  select  |      0|  0|   5|           1|           1|
     |select_ln45_4_fu_805_p3            |  select  |      0|  0|   4|           1|           4|
-    |select_ln45_fu_783_p3              |  select  |      0|  0|  13|           1|          13|
+    |select_ln45_fu_789_p3              |  select  |      0|  0|  13|           1|          13|
     |ap_enable_pp0                      |    xor   |      0|  0|   2|           1|           2|
     |ap_enable_pp1                      |    xor   |      0|  0|   2|           1|           2|
     |ap_enable_reg_pp0_iter1            |    xor   |      0|  0|   2|           2|           1|
