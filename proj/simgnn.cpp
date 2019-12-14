@@ -307,11 +307,6 @@ void simgnn_kernel(
       #pragma HLS pipeline
       #pragma HLS LOOP_TRIPCOUNT max=1200 min=1200
       result_cache[col] = process_pair(NTN_WB, score_w, score_0, L1_W, L1_bias, L2_W, L2_bias, L3_W, L3_bias, ce[col]);
-    }
-
-    for(int col = 0; col < ncol; col ++){
-      #pragma HLS pipeline
-      #pragma HLS LOOP_TRIPCOUNT max=1200 min=1200
       results[row * 1200 + col] = result_cache[col];
     }
   }
